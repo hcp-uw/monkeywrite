@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+.env.*
+
+# Xcode local state and build output
+**/xcuserdata/
+**/*.xcuserstate
+DerivedData/
+build/
+
+# Agent / planning docs (not for the team repo)
+AGENTS.md
+CLAUDE.md
+PLAN*.md
+PLANS.md
+MISSION*.md
+RESEARCH*.md
+METRICS*.md
+Metrics*.md
+metrics*.md
+NOTES.md
+docs/agent/
+/.claude/

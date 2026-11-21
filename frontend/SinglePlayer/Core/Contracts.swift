@@ -44,8 +44,9 @@ struct Passage: Identifiable, Equatable, Sendable {
 /// Where passages come from. Later: a user picker, random words, etc.
 protocol PassageSource {
     func allPassages() -> [Passage]
-    /// A passage other than `excluding` when possible.
-    func randomPassage(excluding: Passage.ID?) -> Passage
+    /// The next passage to show: none of `excluding` (the passages on screen,
+    /// most recent last) when possible, otherwise not the most recent one.
+    func nextPassage(excluding: [Passage.ID]) -> Passage
 }
 
 enum TestMode: Hashable, Sendable {

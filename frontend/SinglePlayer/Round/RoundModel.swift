@@ -176,7 +176,7 @@ final class RoundModel: ObservableObject {
         let settings = defaults.map(SettingsStorage.load) ?? SinglePlayerSettings()
         self.settings = settings
         self.mode = settings.mode
-        let passage = passage ?? passageSource.randomPassage(excluding: nil)
+        let passage = passage ?? passageSource.nextPassage(excluding: [])
         self.passages = [passage]
         var session = MatchSession(passage: passage)
         self.match = session.evaluate(WritingSnapshot(lines: [], activeLineIndex: nil), settings: settings)
@@ -208,9 +208,9 @@ final class RoundModel: ObservableObject {
         }
     }
 
-    /// A different passage on fresh paper.
+    /// A different passage on fresh paper (none of the ones on screen).
     func newPassage() {
-        startTest(with: passageSource.randomPassage(excluding: passage.id))
+        startTest(with: passageSource.nextPassage(excluding: passages.map(\.id)))
     }
 
     /// The passage the test started with, on fresh paper.
@@ -359,9 +359,7 @@ final class RoundModel: ObservableObject {
     /// Timed mode: the text is complete, so another passage follows it
     /// (one not used in this test yet, when there is one).
     private func appendNextPassage() {
-        let used = Set(passages.map(\.id))
-        let next = passageSource.allPassages().filter { !used.contains($0.id) }.randomElement()
-            ?? passageSource.randomPassage(excluding: passages.last?.id)
+        let next = passageSource.nextPassage(excluding: passages.map(\.id))
         session.append(next)
         passages = session.passages
     }
@@ -688,7 +686,8 @@ struct LineSignature: Hashable, Sendable {
 
 /// `SinglePlayerSettings` in UserDefaults, one key per field.
 enum SettingsStorage {
-    private static let prefix = "singlePlayer."
+    /// The namespace of every single-player UserDefaults key.
+    static let prefix = "singlePlayer."
     /// The mode's key (a `TestMode.rawValue`); the home screen's mode picker
     /// writes it too.
     static let modeKey = prefix + "mode"

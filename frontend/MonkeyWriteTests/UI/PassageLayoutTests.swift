@@ -20,9 +20,9 @@ final class PassageLayoutTests: XCTestCase {
     }
 
     func testRandomPassageExcludes() {
-        let src = BundledPassages()
+        let src = BundledPassages(defaults: temporaryDefaults())
         for _ in 0..<50 {
-            XCTAssertNotEqual(src.randomPassage(excluding: "austen-pride-truth").id, "austen-pride-truth")
+            XCTAssertNotEqual(src.nextPassage(excluding: ["biology-cell-energy"]).id, "biology-cell-energy")
         }
     }
 }

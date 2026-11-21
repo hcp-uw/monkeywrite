@@ -100,7 +100,7 @@ final class SinglePlayerSnapshotTests: XCTestCase {
 
     private func makeModel(_ recognizer: ScriptedStrokeRecognizer) -> RoundModel {
         RoundModel(strokeRecognizer: recognizer, textRecognizer: FakeTextImageRecognizer(),
-                   passageSource: BundledPassages(), passage: BundledPassages.all[0], defaults: nil)
+                   passageSource: BundledPassages(defaults: temporaryDefaults()), passage: BundledPassages.all[0], defaults: nil)
     }
 
     func testRenderRoundScreens() async throws {
@@ -130,7 +130,7 @@ final class SinglePlayerSnapshotTests: XCTestCase {
         let recognizer = ScriptedStrokeRecognizer()
         let passage = BundledPassages.all[3]
         let model = RoundModel(strokeRecognizer: recognizer, textRecognizer: FakeTextImageRecognizer(),
-                               passageSource: BundledPassages(), passage: passage, defaults: nil)
+                               passageSource: BundledPassages(defaults: temporaryDefaults()), passage: passage, defaults: nil)
         model.settings.mode = .passage
         let window = try host(model, size: Self.landscape)
         await settle()

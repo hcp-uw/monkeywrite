@@ -3,11 +3,15 @@ import Foundation
 /// Original practice passages written for MonkeyWrite and reviewed for the MVP.
 /// The text is bundled for offline use. A subject-scoped source keeps every
 /// passage in a round, including timed-mode continuations, in that subject.
+/// Passages are dealt from a shuffle bag per subject (`PassageDeck`), so every
+/// passage comes up once before any repeats, across rounds and launches.
 struct BundledPassages: PassageSource {
     let subject: PassageSubject?
+    private let deck: PassageDeck
 
-    init(subject: PassageSubject? = nil) {
+    init(subject: PassageSubject? = nil, defaults: UserDefaults = .standard) {
         self.subject = subject
+        self.deck = PassageDeck(name: subject?.rawValue ?? "all", defaults: defaults)
     }
 
     static let all: [Passage] = [
@@ -198,10 +202,10 @@ struct BundledPassages: PassageSource {
         return Self.all.filter { $0.subject == subject }
     }
 
-    func randomPassage(excluding: Passage.ID?) -> Passage {
+    func nextPassage(excluding: [Passage.ID]) -> Passage {
         let passages = allPassages()
-        let pool = passages.filter { $0.id != excluding }
+        let id = deck.deal(from: passages.map(\.id), excluding: excluding)
         // Every supported subject has ten passages, so this source is nonempty.
-        return (pool.isEmpty ? passages : pool).randomElement()!
+        return passages.first { $0.id == id } ?? passages[0]
     }
 }

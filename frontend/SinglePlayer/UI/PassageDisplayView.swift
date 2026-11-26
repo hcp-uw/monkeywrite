@@ -51,6 +51,7 @@ struct PassageDisplayView: View {
     var breaks: [Int] = []
     var match: MatchState?
     var source: String? = nil
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var rowHeight: CGFloat { ceil(RoundFonts.passageUIFont.lineHeight * 1.5) }
 
@@ -74,14 +75,14 @@ struct PassageDisplayView: View {
                 }
                 .frame(width: geo.size.width, height: rowHeight * 3, alignment: .topLeading)
                 .clipped()
-                .animation(.smooth(duration: 0.3), value: current)
+                .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: current)
             }
             .frame(height: rowHeight * 3)
 
             if let source {
                 Text(source)
                     .font(.caption)
-                    .foregroundStyle(Theme.secondary.opacity(0.7))
+                    .foregroundStyle(Theme.secondary)
             }
         }
         .accessibilityElement(children: .ignore)

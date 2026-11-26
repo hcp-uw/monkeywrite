@@ -46,12 +46,12 @@ final class BundledPassagesTests: XCTestCase {
 
     func testSubjectSelectionScopesTheEntirePool() {
         for subject in PassageSubject.allCases {
-            let source = BundledPassages(subject: subject)
+            let source = BundledPassages(subject: subject, defaults: temporaryDefaults())
             XCTAssertEqual(source.allPassages().count, 10)
             XCTAssertTrue(source.allPassages().allSatisfy { $0.subject == subject })
             for passage in source.allPassages() {
                 for _ in 0..<20 {
-                    let next = source.randomPassage(excluding: passage.id)
+                    let next = source.nextPassage(excluding: [passage.id])
                     XCTAssertEqual(next.subject, subject)
                     XCTAssertNotEqual(next.id, passage.id)
                 }
@@ -60,10 +60,10 @@ final class BundledPassagesTests: XCTestCase {
     }
 
     func testUnfilteredSourcePreservesAllPassages() {
-        let source = BundledPassages()
+        let source = BundledPassages(defaults: temporaryDefaults())
         XCTAssertEqual(source.allPassages(), passages)
         for passage in passages {
-            XCTAssertNotEqual(source.randomPassage(excluding: passage.id).id, passage.id)
+            XCTAssertNotEqual(source.nextPassage(excluding: [passage.id]).id, passage.id)
         }
     }
 

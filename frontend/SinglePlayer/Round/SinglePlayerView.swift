@@ -8,6 +8,7 @@ struct SinglePlayerView: View {
     @StateObject private var model: RoundModel
     private let requestsLandscape: Bool
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init() {
         self.init(model: RoundModel())
@@ -28,6 +29,11 @@ struct SinglePlayerView: View {
                 header
                 paper
             }
+            // Behind the results card the round blurs out, so the card's
+            // numbers never sit on top of handwriting, and VoiceOver stays
+            // on the card.
+            .blur(radius: model.result == nil ? 0 : 14)
+            .accessibilityHidden(model.result != nil)
 
             if let result = model.result {
                 resultsOverlay(result)
@@ -113,8 +119,9 @@ struct SinglePlayerView: View {
                         onRestart: { withAnimation(.smooth) { model.restart() } },
                         onNewPassage: { withAnimation(.smooth) { model.newPassage() } })
                 .padding(32)
+                .accessibilityAddTraits(.isModal)
         }
-        .transition(.opacity.combined(with: .scale(scale: 0.97)))
+        .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.97)))
     }
 }
 

@@ -82,8 +82,19 @@ final class ManualTimer {
 struct FixedPassages: PassageSource {
     let passages: [Passage]
     func allPassages() -> [Passage] { passages }
-    func randomPassage(excluding: Passage.ID?) -> Passage {
-        passages.first { $0.id != excluding } ?? passages[0]
+    func nextPassage(excluding: [Passage.ID]) -> Passage {
+        passages.first { !excluding.contains($0.id) }
+            ?? passages.first { $0.id != excluding.last } ?? passages[0]
+    }
+}
+
+extension XCTestCase {
+    /// A UserDefaults suite of its own, removed when the test ends.
+    func temporaryDefaults() -> UserDefaults {
+        let suite = "MonkeyWriteTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        addTeardownBlock { defaults.removePersistentDomain(forName: suite) }
+        return defaults
     }
 }
 
